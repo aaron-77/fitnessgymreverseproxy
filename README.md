@@ -65,21 +65,27 @@ El repositorio incluye dos archivos de Docker Compose:
 - `docker-compose.yml` — descarga la imagen publicada en Docker Hub (`aaron77/fitnessgymnginx:latest`) y levanta el contenedor, sin construirla.
 - `docker-compose.local.yml` — construye la imagen localmente desde `./nginx` (etiqueta `fitnessgymnginx:latest`) y levanta el contenedor con esa imagen.
 
-**Paso previo obligatorio en ambos casos** — crear la red externa (la que recibe el proxy y en la que correrá la aplicación):
+### Paso 1: crear la red externa (obligatorio en ambos casos)
+
+Antes de cualquier otra acción, crea la red externa en la que correrá el reverse proxy y la aplicación:
 
 ```bash
 docker network create fitnessgym-net
 ```
 
-Si prefieres otro nombre para la red, define la variable `EXTERNAL_NETWORK` en tu `.env` y crea la red con ese nombre.
+Esta red es la misma que utiliza el Compose de la aplicación principal. Si prefieres otro nombre, crea la red con ese nombre y define la variable `EXTERNAL_NETWORK` en el `.env` (ver paso 2).
 
-Opcionalmente, crea un archivo `.env` para personalizar valores (sin él se usan los predeterminados del proyecto):
+### Paso 2: configurar el archivo `.env` (opcional)
+
+Crea el archivo `.env` para personalizar valores (sin él se usan los predeterminados del proyecto). Renombra la plantilla o copia:
 
 ```bash
 cp .env.example .env
 ```
 
-### Iniciar el contenedor con la imagen publicada (sin construirla)
+Edita el archivo `.env` con los valores de tu entorno. Las variables disponibles son las que se describen en la sección [Variables de configuración](#variables-de-configuración).
+
+### Paso 3a: iniciar el contenedor con la imagen publicada (sin construirla)
 
 ```bash
 docker compose up -d
@@ -87,33 +93,14 @@ docker compose up -d
 
 Docker descarga `aaron77/fitnessgymnginx:latest` desde Docker Hub y levanta el contenedor.
 
-### Construir la imagen localmente e iniciar el contenedor
+### Paso 3b: construir la imagen localmente e iniciar el contenedor
 
-Primero renombra la plantilla a `.env` para que Docker Compose pueda leerla:
-
-```bash
-mv .env.example .env
-```
-
-Edita el archivo `.env` con la configuración que quieras usar en la construcción y el contenedor (si no lo editas, se usan los valores de la plantilla):
-
-```env
-HOST_HTTP_PORT=80
-GYM_PRIMARY_DOMAIN=localhost
-GYM_APP_DOMAIN=localhost
-GYM_API_UPSTREAM=fitnessgym_api:5274
-GYM_FRONTEND_UPSTREAM=fitnessgym_frontend:5062
-GYM_SSL_DHPARAM=/etc/nginx/ssl/dhparam.pem
-GYM_CLIENT_MAX_BODY_SIZE=100M
-EXTERNAL_NETWORK=fitnessgym-net
-```
-
-Después, construye la imagen y levanta el contenedor:
+Construye la imagen y levanta el contenedor:
 
 ```bash
 docker compose -f docker-compose.local.yml build
 docker compose -f docker-compose.local.yml up -d
 ```
 
-Docker construye la imagen desde `./nginx` con la etiqueta `fitnessgymnginx:latest` y levanta el contenedor con esa imagen y los valores del `.env`.
+Docker construye la imagen desde `./nginx` con la etiqueta `fitnessgymnginx:latest` y levanta el contenedor con esa imagen, leyendo los valores del `.env` si existe.
 
