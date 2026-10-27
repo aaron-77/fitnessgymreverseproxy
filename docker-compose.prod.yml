@@ -1,0 +1,36 @@
+services:
+  fitnessgym_api:
+    image: aaron77/fitnessgymapi:latest
+    ports:
+      - "127.0.0.1:${APP_API_HOST_PORT:-8090}:${APP_API_CONTAINER_PORT:-5274}"
+    container_name: apicontainer
+    environment:
+      TZ: "${TZ}"
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT}"
+      ASPNETCORE_URLS: "${APP_API_URLS}"
+      SECRET_TOKEN_KEY: "${SECRET_TOKEN_KEY:?SECRET_TOKEN_KEY es obligatoria}"
+      DB_CONNECTION_STRING: "${DB_CONNECTION_STRING:?DB_CONNECTION_STRING es obligatoria}"
+    networks:
+      - fitnessgym-net
+
+  fitnessgym_frontend:
+    image: aaron77/fitnessgymfrontend:latest
+    depends_on:
+      - fitnessgym_api
+    ports:
+      - "127.0.0.1:${APP_FRONTEND_HOST_PORT:-8091}:${APP_FRONTEND_CONTAINER_PORT:-5062}"
+    container_name: frontendcontainer
+    environment:
+      TZ: "${TZ}"
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT}"
+      ASPNETCORE_URLS: "${APP_FRONTEND_URLS}"
+      BACKEND_BASE_ADDRESS: "${BACKEND_BASE_ADDRESS}"
+      SECRET_TOKEN_KEY: "${SECRET_TOKEN_KEY:?SECRET_TOKEN_KEY es obligatoria}"
+      DB_CONNECTION_STRING: "${DB_CONNECTION_STRING:?DB_CONNECTION_STRING es obligatoria}"
+    networks:
+      - fitnessgym-net
+
+networks:
+  fitnessgym-net:
+    external: true
+    name: fitnessgym-net
