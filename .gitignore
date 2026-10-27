@@ -20,3 +20,5 @@ docker-compose.nginx.yml.bak.*
 nginx.prod.conf.bak
 nginx/nginx.local.conf.template
 
+# Directorio local de tooling (no forma parte del proxy)
+.atl/
