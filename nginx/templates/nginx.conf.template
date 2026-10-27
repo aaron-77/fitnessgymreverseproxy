@@ -17,21 +17,27 @@ http {
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
+    # DNS embebido de Docker (ver README)
+    resolver 127.0.0.11 valid=10s ipv6=off;
+
     server {
         listen 80;
         listen [::]:80;
-        server_name _;
+        server_name ${GYM_PRIMARY_DOMAIN} _;
 
         access_log /var/log/nginx/dotnet-app-access.log;
         error_log  /var/log/nginx/dotnet-app-error.log;
 
-        client_max_body_size 100M;
+        client_max_body_size ${GYM_CLIENT_MAX_BODY_SIZE};
+
+        set $api_upstream ${GYM_API_UPSTREAM};
+        set $frontend_upstream ${GYM_FRONTEND_UPSTREAM};
 
         # -----------------------------
         # SignalR (WebSockets)
         # -----------------------------
         location /reservacionesHub {
-            proxy_pass http://api:5274;
+            proxy_pass http://$api_upstream;
 
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -51,7 +57,7 @@ http {
         # API Backend
         # -----------------------------
         location /api {
-            proxy_pass http://api:5274;
+            proxy_pass http://$api_upstream;
 
             proxy_http_version 1.1;
 
@@ -66,7 +72,7 @@ http {
         # Health Check (Frontend)
         # -----------------------------
         location /health {
-            proxy_pass http://frontend:5062;
+            proxy_pass http://$frontend_upstream;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "keep-alive";
@@ -82,7 +88,7 @@ http {
         # App principal .NET
         # -----------------------------
         location / {
-            proxy_pass http://frontend:5062;
+            proxy_pass http://$frontend_upstream;
 
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -103,4 +109,3 @@ http {
         }
     }
 }
-

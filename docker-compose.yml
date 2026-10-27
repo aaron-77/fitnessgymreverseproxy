@@ -1,0 +1,30 @@
+# Compose genérico: contenedor nginx con defaults vía .env / ${VAR:-default}.
+# Imagen base de DockerHub (sin build local). La red externa la declara el dueño de la app.
+services:
+  nginx:
+    image: aaron77/fitnessgymnginx:latest
+    container_name: fitnessgym-nginx
+    ports:
+      - "${HOST_HTTP_PORT:-80}:80"
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+    environment:
+      GYM_PRIMARY_DOMAIN: ${GYM_PRIMARY_DOMAIN:-localhost}
+      GYM_APP_DOMAIN: ${GYM_APP_DOMAIN:-localhost}
+      GYM_API_UPSTREAM: ${GYM_API_UPSTREAM:-fitnessgym_api:5274}
+      GYM_FRONTEND_UPSTREAM: ${GYM_FRONTEND_UPSTREAM:-fitnessgym_frontend:5062}
+      GYM_SSL_DHPARAM: ${GYM_SSL_DHPARAM:-/etc/nginx/ssl/dhparam.pem}
+      GYM_CLIENT_MAX_BODY_SIZE: ${GYM_CLIENT_MAX_BODY_SIZE:-100M}
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-o", "/dev/null", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - frontend-net
+
+networks:
+  frontend-net:
+    name: ${EXTERNAL_NETWORK:-fitnessgym-net}
+    external: true

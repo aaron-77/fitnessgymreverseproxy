@@ -1,0 +1,22 @@
+# Secretos locales — nunca se commitean
+.env
+
+# Respaldos (Req. 7) y directorios de respaldo
+*.bak.*
+backup/
+
+# Editores
+*.swp
+
+# Logs del reverse proxy (montados en ./logs/nginx)
+logs/
+.infisical.json
+
+# Configs no usadas para el levantamiento con docker compose (quedan solo en local)
+nginx.conf
+docker-compose.nginx.yml
+docker-compose.nginx.local.yml
+docker-compose.nginx.yml.bak.*
+nginx.prod.conf.bak
+nginx/nginx.local.conf.template
+
