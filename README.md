@@ -36,7 +36,7 @@ El proyecto utiliza seis variables para configurar el comportamiento de NGINX.
 | `GYM_APP_DOMAIN`           | `localhost`                  | Dominio utilizado para acceder a la aplicación web; pensado para alojar la app en un subdominio. |
 | `GYM_API_UPSTREAM`         | `fitnessgym_api:5274`        | Nombre del servicio de la API y puerto interno al que se reenvían las solicitudes. |
 | `GYM_FRONTEND_UPSTREAM`    | `fitnessgym_frontend:5062`   | Nombre del servicio del frontend y puerto interno al que se reenvían las solicitudes. |
-| `GYM_SSL_DHPARAM`          | `/etc/nginx/ssl/dhparam.pem` | Ruta prevista para el archivo de parámetros Diffie-Hellman cuando se configura HTTPS. |
+| `GYM_SSL_DHPARAM`          | `/etc/nginx/ssl/dhparam.pem` | Ruta prevista para el archivo de parámetros Diffie-Hellman cuando se configura HTTPS. Solo relevante para producción; ni el Compose del installer ni el Compose local la definen. |
 | `GYM_CLIENT_MAX_BODY_SIZE` | `100M`                       | Tamaño máximo permitido para el cuerpo de una solicitud HTTP. |
 
 Además, `docker-compose.installer.dev.yml` admite las siguientes variables:

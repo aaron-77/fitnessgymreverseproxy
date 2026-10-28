@@ -16,7 +16,6 @@ services:
       GYM_APP_DOMAIN: ${GYM_APP_DOMAIN:-localhost}
       GYM_API_UPSTREAM: ${GYM_API_UPSTREAM:-fitnessgym_api:5274}
       GYM_FRONTEND_UPSTREAM: ${GYM_FRONTEND_UPSTREAM:-fitnessgym_frontend:5062}
-      GYM_SSL_DHPARAM: ${GYM_SSL_DHPARAM:-/etc/nginx/ssl/dhparam.pem}
       GYM_CLIENT_MAX_BODY_SIZE: ${GYM_CLIENT_MAX_BODY_SIZE:-100M}
     healthcheck:
       test: ["CMD", "curl", "-s", "-o", "/dev/null", "http://localhost/"]
