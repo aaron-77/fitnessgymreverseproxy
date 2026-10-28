@@ -3,7 +3,7 @@
 services:
   nginx:
     image: aaron77/fitnessgymnginxdev:latest
-    container_name: fitnessgym-nginx-2
+    container_name: fitnessgym-nginx
     ports:
       - "${HOST_HTTP_PORT:-80}:80"
     volumes:
