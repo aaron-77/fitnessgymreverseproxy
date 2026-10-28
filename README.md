@@ -62,7 +62,7 @@ La salida generada se guarda en `/etc/nginx`, mediante la variable `NGINX_ENVSUB
 
 El repositorio incluye dos archivos de Docker Compose:
 
-- `docker-compose.nginx.installer.dev.yml` — descarga la imagen publicada en Docker Hub (`aaron77/fitnessgymnginx:latest`) y levanta el contenedor, sin construirla. Es el archivo que consume el instalador en ambientes de desarrollo.
+- `docker-compose.nginx.installer.dev.yml` — descarga la imagen publicada en Docker Hub (`aaron77/fitnessgymnginxdev:latest`, variante sin certificados SSL) y levanta el contenedor, sin construirla. Es el archivo que consume el instalador en ambientes de desarrollo.
 - `docker-compose.local.yml` — construye la imagen localmente desde `./nginx` (etiqueta `fitnessgymnginx:latest`) y levanta el contenedor con esa imagen.
 
 Nota: el archivo `docker-compose.yml` no versiona en este repositorio; es la variante de producción utilizada cuando el host cuenta con certificado SSL y vive únicamente en el servidor.
@@ -93,7 +93,7 @@ Edita el archivo `.env` con los valores de tu entorno. Las variables disponibles
 docker compose -f docker-compose.nginx.installer.dev.yml up -d
 ```
 
-Docker descarga `aaron77/fitnessgymnginx:latest` desde Docker Hub y levanta el contenedor.
+Docker descarga `aaron77/fitnessgymnginxdev:latest` desde Docker Hub y levanta el contenedor.
 
 ### Paso 3b: construir la imagen localmente e iniciar el contenedor
 

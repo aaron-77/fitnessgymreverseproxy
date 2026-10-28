@@ -2,8 +2,8 @@
 # Imagen base de DockerHub (sin build local). La red externa la declara el dueño de la app.
 services:
   nginx:
-    image: aaron77/fitnessgymnginx:latest
-    container_name: fitnessgym-nginx
+    image: aaron77/fitnessgymnginxdev:latest
+    container_name: fitnessgym-nginx-2
     ports:
       - "${HOST_HTTP_PORT:-80}:80"
     volumes:
