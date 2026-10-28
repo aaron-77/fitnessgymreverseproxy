@@ -1,5 +1,5 @@
 # Compose para construir la imagen localmente y levantarla.
-# Usa la misma configuración y defaults que docker-compose.installer.dev.yml,
+# Usa la misma configuración y defaults que docker-compose.nginx.installer.dev.yml,
 # pero en lugar de descargar la imagen de Docker Hub, la construye
 # desde ./nginx y la etiqueta localmente como fitnessgymnginx:latest.
 services:

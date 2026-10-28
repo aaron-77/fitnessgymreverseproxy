@@ -22,8 +22,8 @@ Este enfoque evita tener que montar archivos de configuración desde el host o i
 | ------------------------------------- | ----------- |
 | `nginx/Dockerfile`                    | Define la imagen del reverse proxy, los valores predeterminados de las seis variables `GYM_*` y la configuración de `envsubst`. |
 | `nginx/templates/nginx.conf.template` | Contiene el template de nginx que se usa para construir la configuración final de nginx. |
-| `docker-compose.installer.dev.yml`    | Define el servicio del reverse proxy y utiliza la imagen publicada en Docker Hub, sin necesidad de construirla localmente. También permite configurar el puerto del host y la red externa. Es el archivo que usa el instalador en ambientes de desarrollo. |
-| `docker-compose.local.yml`            | Compose para construir la imagen localmente desde `./nginx` (etiqueta `fitnessgymnginx:latest`); también permite levantar el contenedor con la imagen construida. Usa las mismas variables y valores predeterminados que `docker-compose.installer.dev.yml`. |
+| `docker-compose.nginx.installer.dev.yml`    | Define el servicio del reverse proxy y utiliza la imagen publicada en Docker Hub, sin necesidad de construirla localmente. También permite configurar el puerto del host y la red externa. Es el archivo que usa el instalador en ambientes de desarrollo. |
+| `docker-compose.local.yml`            | Compose para construir la imagen localmente desde `./nginx` (etiqueta `fitnessgymnginx:latest`); también permite levantar el contenedor con la imagen construida. Usa las mismas variables y valores predeterminados que `docker-compose.nginx.installer.dev.yml`. |
 | `.env.example`                        | Proporciona una plantilla con las variables de configuración, el puerto del host y el nombre de la red externa. |
 
 ## Variables de configuración
@@ -39,7 +39,7 @@ El proyecto utiliza seis variables para configurar el comportamiento de NGINX.
 | `GYM_SSL_DHPARAM`          | `/etc/nginx/ssl/dhparam.pem` | Ruta prevista para el archivo de parámetros Diffie-Hellman cuando se configura HTTPS. Solo relevante para producción; ni el Compose del installer ni el Compose local la definen. |
 | `GYM_CLIENT_MAX_BODY_SIZE` | `100M`                       | Tamaño máximo permitido para el cuerpo de una solicitud HTTP. |
 
-Además, `docker-compose.installer.dev.yml` admite las siguientes variables:
+Además, `docker-compose.nginx.installer.dev.yml` admite las siguientes variables:
 
 | Variable           | Valor predeterminado | Propósito |
 | ------------------ | -------------------- | --------- |
@@ -62,7 +62,7 @@ La salida generada se guarda en `/etc/nginx`, mediante la variable `NGINX_ENVSUB
 
 El repositorio incluye dos archivos de Docker Compose:
 
-- `docker-compose.installer.dev.yml` — descarga la imagen publicada en Docker Hub (`aaron77/fitnessgymnginx:latest`) y levanta el contenedor, sin construirla. Es el archivo que consume el instalador en ambientes de desarrollo.
+- `docker-compose.nginx.installer.dev.yml` — descarga la imagen publicada en Docker Hub (`aaron77/fitnessgymnginx:latest`) y levanta el contenedor, sin construirla. Es el archivo que consume el instalador en ambientes de desarrollo.
 - `docker-compose.local.yml` — construye la imagen localmente desde `./nginx` (etiqueta `fitnessgymnginx:latest`) y levanta el contenedor con esa imagen.
 
 Nota: el archivo `docker-compose.yml` no versiona en este repositorio; es la variante de producción utilizada cuando el host cuenta con certificado SSL y vive únicamente en el servidor.
@@ -90,7 +90,7 @@ Edita el archivo `.env` con los valores de tu entorno. Las variables disponibles
 ### Paso 3a: iniciar el contenedor con la imagen publicada (sin construirla)
 
 ```bash
-docker compose -f docker-compose.installer.dev.yml up -d
+docker compose -f docker-compose.nginx.installer.dev.yml up -d
 ```
 
 Docker descarga `aaron77/fitnessgymnginx:latest` desde Docker Hub y levanta el contenedor.
