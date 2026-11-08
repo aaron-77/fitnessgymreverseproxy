@@ -56,9 +56,6 @@ El proyecto utiliza variables `GYM_*` para configurar el comportamiento de NGINX
 | `GYM_APP_DOMAIN`           | `localhost` | Dominio utilizado para acceder a la aplicación web; pensado para alojar la app en un subdominio. |
 | `GYM_API_UPSTREAM`         | `fitnessgym_api:5274` | Nombre del servicio de la API y puerto interno al que se reenvían las solicitudes. |
 | `GYM_FRONTEND_UPSTREAM`    | `fitnessgym_frontend:5062` | Nombre del servicio del frontend y puerto interno al que se reenvían las solicitudes. |
-| `GYM_SSL_CERT`             | `/etc/nginx/ssl/fullchain.pem` en la imagen; Compose prod usa `/etc/letsencrypt/live/ahlaradev.website/fullchain.pem` | Ruta interna al certificado. Compose puede redefinirla y el entrypoint tiene un fallback. |
-| `GYM_SSL_KEY`              | `/etc/nginx/ssl/privkey.pem` en la imagen; Compose prod usa `/etc/letsencrypt/live/ahlaradev.website/privkey.pem` | Ruta interna a la llave privada. Compose puede redefinirla y el entrypoint tiene un fallback. |
-| `GYM_SSL_DHPARAM`          | `/etc/nginx/ssl/dhparam.pem` | Ruta interna al archivo Diffie-Hellman. El entrypoint la usa como fallback si no se define en el entorno. |
 | `GYM_CLIENT_MAX_BODY_SIZE` | `100M` | Tamaño máximo permitido para el cuerpo de una solicitud HTTP. |
 
 Además, `docker-compose.nginx.installer.dev.yml` admite las siguientes variables:
@@ -68,7 +65,14 @@ Además, `docker-compose.nginx.installer.dev.yml` admite las siguientes variable
 | `HOST_HTTP_PORT`   | `80`                 | Puerto del host en el que se publica el servicio HTTP. |
 | `EXTERNAL_NETWORK` | `fitnessgym-net`     | Nombre de la red Docker externa a la que se conecta el proxy. |
 
-El Compose de producción admite además `GYM_SSL_CERTS_HOST_PATH` y `GYM_SSL_CERTS_CONTAINER_PATH` para elegir el directorio de certificados que se monta, y `GYM_SSL_DHPARAM_HOST_PATH` para elegir el archivo `dhparam.pem` del host que se monta en la ruta interna `GYM_SSL_DHPARAM`. Configura `GYM_SSL_CERT` y `GYM_SSL_KEY` con rutas dentro del directorio montado. Si falta cualquiera de los tres archivos SSL, NGINX arranca solo con HTTP.
+Para el soporte SSL (opcional, solo aplica cuando usas SSL), el Compose de producción admite las siguientes variables:
+
+* **`GYM_SSL_CERT`:** (opcional, solo aplica cuando usas SSL) ruta, dentro del contenedor, del certificado `fullchain.pem`. La lee el entrypoint; si el archivo no existe, NGINX arranca solo con HTTP. Debe empezar con el valor de `GYM_SSL_CERTS_CONTAINER_PATH`.
+* **`GYM_SSL_KEY`:** (opcional, solo aplica cuando usas SSL) ruta, dentro del contenedor, de la clave privada `privkey.pem`. Se usa junto con `GYM_SSL_CERT` y también debe empezar con el valor de `GYM_SSL_CERTS_CONTAINER_PATH`.
+* **`GYM_SSL_DHPARAM`:** (opcional, solo aplica cuando usas SSL) ruta, dentro del contenedor, del archivo de parámetros Diffie-Hellman (`dhparam.pem`) para TLS.
+* **`GYM_SSL_CERTS_HOST_PATH`:** (opcional, solo aplica cuando usas SSL) ruta en el host del directorio de certificados (por defecto `/etc/letsencrypt`). Se monta como volumen de solo lectura en el Compose de producción.
+* **`GYM_SSL_CERTS_CONTAINER_PATH`:** (opcional, solo aplica cuando usas SSL) ruta, dentro del contenedor, donde se monta el directorio de certificados del host. Es el valor común de `GYM_SSL_CERT` y `GYM_SSL_KEY`: aunque se usa en partes distintas del proceso (el montaje del volumen y el entrypoint), si la cambias debes actualizar también esas dos variables.
+* **`GYM_SSL_DHPARAM_HOST_PATH`:** (opcional, solo aplica cuando usas SSL) ruta en el host del archivo `dhparam.pem`, que se monta en la ruta interna definida por `GYM_SSL_DHPARAM`.
 
 La red `fitnessgym-net` es creada y administrada por el Compose de la aplicación principal.
 
@@ -76,7 +80,7 @@ La red `fitnessgym-net` es creada y administrada por el Compose de la aplicació
 
 El repositorio incluye Compose para desarrollo local, instalación desde una imagen publicada y producción:
 
-- `docker-compose.nginx.installer.dev.yml` — descarga la imagen publicada en Docker Hub (`aaron77/fitnessgymnginxdev:latest`, variante sin certificados SSL) y levanta el contenedor, sin construirla. Es el archivo que consume el instalador en ambientes de desarrollo.
+- `docker-compose.nginx.installer.dev.yml` — descarga la imagen publicada en Docker Hub (`aaron77/fitnessgymnginx:latest`, variante sin certificados SSL) y levanta el contenedor, sin construirla. Es el archivo que consume el instalador en ambientes de desarrollo.
 - `docker-compose.nginx.local.yml` — construye la imagen localmente con la etiqueta `fitnessgymnginx` y levanta el contenedor por HTTP, sin montar certificados.
 - `docker-compose.local.yml` — alternativa local que construye la etiqueta `fitnessgymnginx:latest` y permite configurar dominios y upstreams desde `.env`.
 
@@ -108,7 +112,7 @@ Edita el archivo `.env` con los valores de tu entorno. Las variables disponibles
 docker compose -f docker-compose.nginx.installer.dev.yml up -d
 ```
 
-Docker descarga `aaron77/fitnessgymnginxdev:latest` desde Docker Hub y levanta el contenedor.
+Docker descarga `aaron77/fitnessgymnginx:latest` desde Docker Hub y levanta el contenedor.
 
 ### Paso 3b: construir la imagen localmente e iniciar el contenedor
 
