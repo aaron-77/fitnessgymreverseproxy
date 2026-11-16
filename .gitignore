@@ -1,5 +1,6 @@
 # Secretos locales — nunca se commitean
 .env
+variablesentornoprod.csv
 
 # Respaldos (Req. 7) y directorios de respaldo
 *.bak.*
