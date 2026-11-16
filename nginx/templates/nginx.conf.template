@@ -20,12 +20,6 @@ http {
     # DNS embebido de Docker (ver README)
     resolver 127.0.0.11 valid=10s ipv6=off;
 
-    # Redirect HTTP -> HTTPS. El entrypoint llena esta variable SOLO cuando
-    # encuentra certificados; en modo HTTP puro queda vacía y no existe el block.
-    # Si renovás certs con certbot webroot (HTTP-01), montá el webroot en
-    # /var/www/certbot para que este location lo sirva antes del redirect.
-    ${GYM_HTTP_REDIRECT_BLOCK}
-
     server {
         listen 80;
         listen [::]:80;
