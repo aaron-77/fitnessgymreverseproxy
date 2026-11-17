@@ -1,0 +1,35 @@
+# Compose genérico: contenedor nginx con defaults vía .env / ${VAR:-default}.
+# Variante PROD del instalador: solo expone 443 (HTTPS/SSL termination).
+# Imagen base de DockerHub (sin build local). La red externa la declara el dueño de la app.
+services:
+  nginx:
+    image: aaron77/fitnessgymnginx:latest
+    container_name: fitnessgym-nginx
+    ports:
+      - "${HOST_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+      - ${GYM_SSL_CERTS_HOST_PATH:-/etc/letsencrypt}:${GYM_SSL_CERTS_CONTAINER_PATH:-/etc/letsencrypt}:ro
+      - ${GYM_SSL_DHPARAM_HOST_PATH:-/etc/nginx/ssl/dhparam.pem}:${GYM_SSL_DHPARAM:-/etc/nginx/ssl/dhparam.pem}:ro
+    environment:
+      GYM_PRIMARY_DOMAIN: ${GYM_PRIMARY_DOMAIN:-localhost}
+      GYM_APP_DOMAIN: ${GYM_APP_DOMAIN:-localhost}
+      GYM_API_UPSTREAM: ${GYM_API_UPSTREAM:-fitnessgym_api:5274}
+      GYM_FRONTEND_UPSTREAM: ${GYM_FRONTEND_UPSTREAM:-fitnessgym_frontend:5062}
+      GYM_CLIENT_MAX_BODY_SIZE: ${GYM_CLIENT_MAX_BODY_SIZE:-100M}
+      GYM_SSL_CERT: ${GYM_SSL_CERT}
+      GYM_SSL_KEY: ${GYM_SSL_KEY}
+      GYM_SSL_DHPARAM: ${GYM_SSL_DHPARAM}
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -sk https://localhost/ || curl -sf http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - frontend-net
+
+networks:
+  frontend-net:
+    name: ${EXTERNAL_NETWORK:-fitnessgym-net}
+    external: true

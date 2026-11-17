@@ -1,11 +1,11 @@
 # Compose genérico: contenedor nginx con defaults vía .env / ${VAR:-default}.
+# Variante DEV del instalador: solo expone 80 (HTTP).
 # Imagen base de DockerHub (sin build local). La red externa la declara el dueño de la app.
 services:
   nginx:
     image: aaron77/fitnessgymnginx:latest
     container_name: fitnessgym-nginx
     ports:
-      - "${HOST_HTTPS_PORT:-443}:443"
       - "${HOST_HTTP_PORT:-80}:80"
     volumes:
       - ./logs/nginx:/var/log/nginx
